@@ -1,11 +1,11 @@
 import React from 'react'
+import BudgetsList from './_components/BudgetsList'
 
 function Budgets() {
   return (
-    <div>
-      <h1 className='text-green-600 text-4xl'>
-        My Budgets
-      </h1>
+    <div className='p-10'>
+      <h2 className='font-bold text-3xl'>My Budgets</h2>
+      <BudgetsList/>
     </div>
   )
 }

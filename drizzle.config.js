@@ -28,6 +28,6 @@ export default defineConfig({
   schema: "./utils/schema.jsx",
   // driver: "pglite",
   dbCredentials: {
-    url: process.env.DATABASE_URL,
+    url: process.env.NEXT_PUBLIC_DATABASE_URL,
   }
 });
