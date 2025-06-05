@@ -25,7 +25,7 @@ import { DialogClose } from '@radix-ui/react-dialog';
  * 
  */
 
-function CreateBudget() {
+function CreateBudget({refreshData}) {
 
     const [emojiIcon, setEmojiIcon] = useState('😀');
     const [openEmojiPicker, setOpenEmojiPicker] = useState(false);
@@ -43,6 +43,7 @@ function CreateBudget() {
                 icon: emojiIcon
             }).returning({ insertedId: Budgets.id })
         if (result) {
+            refreshData();
             toast("New Budget Created Well Done!")
             // ✅ Reset the form
             // setName('');
@@ -81,7 +82,7 @@ function CreateBudget() {
                         </Button>
 
                         {openEmojiPicker && (
-                            <div className='absolute'>
+                            <div className='absolute z-20'>
                                 <EmojiPicker
                                     open={openEmojiPicker}
                                     onEmojiClick={(e) => {
