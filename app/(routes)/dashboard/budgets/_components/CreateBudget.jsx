@@ -27,7 +27,7 @@ import { DialogClose } from '@radix-ui/react-dialog';
 
 function CreateBudget({refreshData}) {
 
-    const [emojiIcon, setEmojiIcon] = useState('😀');
+    const [emojiIcon, setEmojiIcon] = useState('🚘');
     const [openEmojiPicker, setOpenEmojiPicker] = useState(false);
 
     const [name, setName] = useState();
