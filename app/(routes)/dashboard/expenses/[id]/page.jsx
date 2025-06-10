@@ -8,15 +8,34 @@ import React, { useEffect, use, useState } from 'react'; // ✅ Import `use` fro
 import BudgetItem from '../../budgets/_components/BudgetItem';
 import AddExpense from '../_components/AddExpense';
 import ExpenseListTable from '../_components/ExpenseListTable';
+import { Button } from '@/components/ui/button';
+import { Trash } from 'lucide-react';
+
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
+
 
 function ExpensesScreen({ params }) {
     const { user, isLoaded } = useUser();
     const [budgetInfo, setBudgetInfo] = useState();
-    const [expensesList,setExpensesList] = useState([]);
+    const [expensesList, setExpensesList] = useState([]);
+    const router = useRouter();
+
 
     // ✅ unwrap the promise
-    const resolvedParams = use(params); 
-    const budgetId = resolvedParams.id;
+    const resolvedParams = use(params);
+    const paramsId = resolvedParams.id;
 
     useEffect(() => {
         if (isLoaded && user) {
@@ -37,7 +56,7 @@ function ExpensesScreen({ params }) {
             .from(Budgets)
             .leftJoin(Expenses, eq(Budgets.id, Expenses.budgetId))
             .where(eq(Budgets.createdBy, user?.primaryEmailAddress?.emailAddress))
-            .where(eq(Budgets.id, budgetId))
+            .where(eq(Budgets.id, paramsId))//here paramsId is-->params.id
             .groupBy(Budgets.id);
 
         setBudgetInfo(result[0]);
@@ -47,17 +66,61 @@ function ExpensesScreen({ params }) {
     /**
      * Get Latest Expenses
      */
-    const getExpensesList = async()=>{
+    const getExpensesList = async () => {
         const result = await db.select().from(Expenses)
-        .where(eq(Expenses.budgetId,budgetId))
-        .orderBy(desc(Expenses.id));
+            .where(eq(Expenses.budgetId, paramsId))//here paramsId is-->params.id
+            .orderBy(desc(Expenses.id));
         setExpensesList(result);
         // console.log(result);
     }
 
+    /**
+     * Used to delete budget
+     */
+    const deleteBudget = async () => {
+        const deleteExpenseResult = await db.delete(Expenses)
+            .where(eq(Expenses.budgetId, paramsId))  //here paramsId is-->params.id
+            .returning();
+
+        if (deleteExpenseResult) {
+             await db.delete(Budgets)
+                .where(eq(Budgets.id, paramsId)) //here paramsId is-->params.id
+                .returning();
+        }
+        toast('Budget Deleted!');
+        router.replace('/dashboard/budgets');
+        
+
+
+        // console.log(result)
+    }
+
     return (
         <div className="p-10">
-            <h2 className="text-2xl font-bold">My Expenses</h2>
+            <h2 className="text-2xl font-bold flex justify-between items-center">My Expenses
+
+                <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                        <Button className="flex gap-2 cursor-pointer" variant="destructive">
+                            <Trash />Delete
+                        </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                                This action cannot be undone. This will permanently delete your current budget along with expenses
+                                and remove your data from our servers.
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => deleteBudget()} >Continue</AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
+
+            </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 mt-6 gap-5">
                 {budgetInfo ? (
                     <BudgetItem budget={budgetInfo} />
@@ -65,9 +128,9 @@ function ExpensesScreen({ params }) {
                     <div className="h-[150px] w-full bg-slate-200 rounded-lg animate-pulse"></div>
                 )}
                 <AddExpense
-                    budgetId={budgetId} // ✅ fixed: using resolvedParams.id instead of params.id
+                    budgetId={paramsId} // ✅ fixed: using resolvedParams.id instead of params.id
                     user={user}
-                     refreshData={()=>getBudgetInformation()}
+                    refreshData={() => getBudgetInformation()}
                 />
             </div>
             <div className='mt-4'>
@@ -75,7 +138,7 @@ function ExpensesScreen({ params }) {
                     Latest Expenses
                 </h2>
                 <ExpenseListTable expensesList={expensesList}
-                refreshData={()=>getBudgetInformation()}
+                    refreshData={() => getBudgetInformation()}
                 />
             </div>
         </div>
