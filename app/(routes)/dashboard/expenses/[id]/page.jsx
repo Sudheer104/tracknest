@@ -9,7 +9,7 @@ import BudgetItem from '../../budgets/_components/BudgetItem';
 import AddExpense from '../_components/AddExpense';
 import ExpenseListTable from '../_components/ExpenseListTable';
 import { Button } from '@/components/ui/button';
-import { Trash } from 'lucide-react';
+import { ArrowLeft, Pen, PenBox, Trash } from 'lucide-react';
 
 import {
     AlertDialog,
@@ -24,13 +24,14 @@ import {
 } from "@/components/ui/alert-dialog"
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
+import EditBudget from '../_components/EditBudget';
 
 
 function ExpensesScreen({ params }) {
     const { user, isLoaded } = useUser();
     const [budgetInfo, setBudgetInfo] = useState();
     const [expensesList, setExpensesList] = useState([]);
-    const router = useRouter();
+    const route = useRouter();
 
 
     // ✅ unwrap the promise
@@ -88,16 +89,20 @@ function ExpensesScreen({ params }) {
                 .returning();
         }
         toast('Budget Deleted!');
-        router.replace('/dashboard/budgets');
-        
-
-
+        route.replace('/dashboard/budgets');
         // console.log(result)
     }
 
     return (
         <div className="p-10">
-            <h2 className="text-2xl font-bold flex justify-between items-center">My Expenses
+            <h2 className="text-2xl font-bold flex justify-between items-center">
+            <span className='flex gap-2.5 items-center'>
+                <ArrowLeft onClick={()=>route.back()} className='cursor-pointer'/>
+                My Expenses
+            </span>
+            <div className='flex gap-2 items-center'>
+            {/* BUDGET COMPONENT */}
+                <EditBudget budgetInfo={budgetInfo} refreshData={()=>getBudgetInformation()} />
 
                 <AlertDialog>
                     <AlertDialogTrigger asChild>
@@ -119,7 +124,8 @@ function ExpensesScreen({ params }) {
                         </AlertDialogFooter>
                     </AlertDialogContent>
                 </AlertDialog>
-
+            </div>
+               
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 mt-6 gap-5">
                 {budgetInfo ? (
