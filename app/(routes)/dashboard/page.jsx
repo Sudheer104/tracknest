@@ -5,9 +5,10 @@ import CardInfo from './_components/CardInfo';
 import { db } from '@/utils/dbConfig';
 import { desc, eq, getTableColumns, sql } from 'drizzle-orm';
 import { Budgets, Expenses } from '@/utils/schema';
+import BarChartDashboard from './_components/BarChartDashboard';
 //This work as a router which direct render in ui using localhost:3000/dashboard
 function Dashboard() {
-  const {user} = useUser(); //This provided by the cleark login user name
+  const { user } = useUser(); //This provided by the cleark login user name
 
   const [budgetList, setBudgetList] = useState([]);
 
@@ -23,7 +24,7 @@ function Dashboard() {
    */
 
   const getBudgetList = async () => {
-    
+
     const result = await db.select({
       ...getTableColumns(Budgets),
       totalSpend: sql`sum(${Expenses.amount})`.mapWith(Number),
@@ -42,6 +43,19 @@ function Dashboard() {
       <p className='text-gray-500'>Here's what happning with your money, Lets manage your expense</p>
 
       <CardInfo budgetList={budgetList} />
+      <div className='grid grid-cols-1 md:grid-cols-3 mt-6'>
+        <div className='md:col-span-2'>
+
+          {/**This is BarChartComponent.jsx */}
+          <BarChartDashboard
+            budgetList={budgetList}
+          />
+        </div>
+        <div>
+          Other contact
+        </div>
+
+      </div>
     </div>
   )
 }

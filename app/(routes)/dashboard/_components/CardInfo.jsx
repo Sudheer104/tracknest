@@ -56,11 +56,8 @@ function CardInfo({ budgetList }) {
                  */
                 <div className='mt-7 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5'>
                     {[1, 2, 3, 4, 5].map((item, index) => (
-                        <div key={index} className='p-6 border rounded-lg shadow-md bg-slate-200 animate-pulse flex flex-col justify-between h-[110px]'>
-                            <div className='flex justify-between items-center'>
-                                
-                                
-                            </div>
+                        <div key={index} className='h-[110px] w-full bg-slate-200 animate-pulse roun-lg'>
+                           
                         </div>
                     ))}
                 </div>
