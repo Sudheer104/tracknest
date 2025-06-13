@@ -38,7 +38,7 @@ function SideNav() {
     const path = usePathname();
 
     useEffect(() => {
-        console.log("Current path:", path);
+        // console.log("Current path:", path);
     }, [path]);
 
     return (
