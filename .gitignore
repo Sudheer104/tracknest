@@ -3,6 +3,8 @@
 # Ignore local environment variables
 .env.local
 
+public/payment.jpg
+
 # dependencies
 /node_modules
 /.pnp
